@@ -43,12 +43,12 @@ public class SharedPrefManager {
                 .apply();
     }
 
-
+//Valores por default especificados :D
     public String obtenerMensaje() {
-        return preferences.getString(KEY_MENSAJE, "Sigue avanzando 💪");
+        return preferences.getString(KEY_MENSAJE, "No te rindas 💪");
     }
 
     public int obtenerFrecuenciaMotivacional() {
-        return preferences.getInt(KEY_FRECUENCIA_MOTIVACIONAL, 6);
+        return preferences.getInt(KEY_FRECUENCIA_MOTIVACIONAL, 1);
     }
 }

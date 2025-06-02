@@ -63,26 +63,5 @@ public class Notifications {
         NotificationManagerCompat.from(context).notify((int) System.currentTimeMillis(), builder.build());
     }
 
-    public static void programarNotificacion(Context context, Intent intent, long triggerAtMillis) {
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-        );
 
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        if (alarmManager != null) {
-            SharedPrefManager manager = new SharedPrefManager(context);
-            long intervalo = manager.obtenerFrecuenciaMotivacional() * 3600000L;
-
-            alarmManager.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerAtMillis,
-                    intervalo,
-                    pendingIntent
-            );
-        }
-    }
 }

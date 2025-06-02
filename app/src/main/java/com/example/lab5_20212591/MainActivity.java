@@ -1,11 +1,14 @@
 package com.example.lab5_20212591;
 import android.Manifest;
+import android.app.AlarmManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,10 +22,15 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,6 +55,22 @@ public class MainActivity extends AppCompatActivity {
         Notifications.crearCanales(this);
 
         manager = new SharedPrefManager(this);
+
+        Data data = new Data.Builder()
+                .putString("titulo", "Motivación diaria")
+                .putString("mensaje", manager.obtenerMensaje())
+                .putString("canal", "Motivacional")
+                .build();
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, manager.obtenerFrecuenciaMotivacional(), TimeUnit.HOURS)
+                .setInputData(data)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "MotivacionPeriodicWorker",
+                ExistingPeriodicWorkPolicy.REPLACE,  // Usa REPLACE si quieres que se actualice siempre
+                workRequest
+        );
 
         tvSaludo = findViewById(R.id.tvSaludo);
         tvMotivacion = findViewById(R.id.tvMotivacion);

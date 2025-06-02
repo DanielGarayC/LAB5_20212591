@@ -16,6 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.lab5_20212591.model.Habito;
 
@@ -23,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class CrearHabitoActivity extends AppCompatActivity {
 
@@ -46,12 +52,7 @@ public class CrearHabitoActivity extends AppCompatActivity {
         calendar = Calendar.getInstance();
 
         String[] categorias = {"Ejercicio", "Alimentación", "Sueño", "Lectura"};
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_dropdown_item_1line,
-                categorias
-        );
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categorias);
         autoCategoria.setAdapter(adapter);
 
         etFechaHora.setOnClickListener(v -> mostrarDateTimePicker());
@@ -59,31 +60,34 @@ public class CrearHabitoActivity extends AppCompatActivity {
         btnGuardar.setOnClickListener(v -> {
             String nombre = etNombre.getText().toString();
             String categoria = autoCategoria.getText().toString();
-            int frecuencia = Integer.parseInt(etFrecuencia.getText().toString());
+            String strFrecuencia = etFrecuencia.getText().toString();
             String fechaHora = etFechaHora.getText().toString();
 
-            //Validaciones
-            if (nombre.isEmpty() || etFrecuencia.getText().toString().isEmpty() || fechaHora.isEmpty()) {
+            if (nombre.isEmpty() || strFrecuencia.isEmpty() || fechaHora.isEmpty() || categoria.isEmpty()) {
                 Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (frecuencia <= 0) {
-                Toast.makeText(this, "La frecuencia debe ser mayor a 0", Toast.LENGTH_SHORT).show();
+            int frecuencia;
+            try {
+                frecuencia = Integer.parseInt(strFrecuencia);
+                if (frecuencia <= 0) {
+                    Toast.makeText(this, "La frecuencia debe ser mayor a 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Frecuencia inválida", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Guarda hábito
             Habito habito = new Habito(nombre, categoria, frecuencia, fechaHora);
             ArrayList<Habito> lista = manager.obtenerHabitos();
             lista.add(habito);
             manager.guardarHabitos(lista);
 
-            // Recordatorio del hábito
-            Intent intent = new Intent(this, AlarmaReceiver.class);
-            intent.putExtra("titulo", "Recordatorio de hábito");
-            //Sección para el mensaje sugerido :D
-            String mensajeSugerido = "";
-
+            // Mensaje sugerido :D
+            String mensajeSugerido;
             switch (categoria) {
                 case "Ejercicio":
                     mensajeSugerido = "Hora de realizar actividad física: " + nombre;
@@ -97,12 +101,32 @@ public class CrearHabitoActivity extends AppCompatActivity {
                 case "Lectura":
                     mensajeSugerido = "Hora de lectura: " + nombre;
                     break;
-
+                default:
+                    mensajeSugerido = "Recordatorio: " + nombre;
+                    break;
             }
 
-            intent.putExtra("mensaje", mensajeSugerido);
-            intent.putExtra("canal", categoria);
-            Notifications.programarNotificacion(this, intent, calendar.getTimeInMillis());
+
+            // Datos al Worker
+            Data data = new Data.Builder()
+                    .putString("titulo", "Recordatorio de hábito")
+                    .putString("mensaje", mensajeSugerido)
+                    .putString("canal", categoria)
+                    .build();
+
+            long delay = calendar.getTimeInMillis() - System.currentTimeMillis();
+            if (delay < 0) delay = 0;
+
+            PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, frecuencia, TimeUnit.HOURS)
+                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                    .setInputData(data)
+                    .build();
+
+            WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                    "Habito_" + nombre + "_" + System.currentTimeMillis(), // identificador único por hábito
+                    ExistingPeriodicWorkPolicy.KEEP,
+                    workRequest
+            );
 
             Toast.makeText(this, "Hábito guardado", Toast.LENGTH_SHORT).show();
             finish();
@@ -111,7 +135,6 @@ public class CrearHabitoActivity extends AppCompatActivity {
 
     private void mostrarDateTimePicker() {
         Calendar now = Calendar.getInstance();
-
         new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             new TimePickerDialog(this, (view1, hour, minute) -> {
                 calendar.set(year, month, dayOfMonth, hour, minute);

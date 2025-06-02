@@ -11,6 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import java.util.concurrent.TimeUnit;
 
 public class ConfHabitoActivity extends AppCompatActivity {
 
@@ -33,24 +40,44 @@ public class ConfHabitoActivity extends AppCompatActivity {
 
         btnGuardar.setOnClickListener(v -> {
             String mensaje = etMensaje.getText().toString();
-            int frecuencia = Integer.parseInt(etFrecuencia.getText().toString());
+            String frecuenciaStr = etFrecuencia.getText().toString();
 
-            //Validación owo
-            if (mensaje.isEmpty() || etFrecuencia.getText().toString().isEmpty()) {
+            if (mensaje.isEmpty() || frecuenciaStr.isEmpty()) {
                 Toast.makeText(this, "Completa todos los campos!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int frecuencia;
+            try {
+                frecuencia = Integer.parseInt(frecuenciaStr);
+                if (frecuencia <= 0) {
+                    Toast.makeText(this, "La frecuencia debe ser mayor a 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Frecuencia inválida", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             manager.guardarMensajeMotivacional(mensaje, frecuencia);
             Toast.makeText(this, "Configuración guardada", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, AlarmaReceiver.class);
-            intent.putExtra("titulo", "Motivación diaria");
-            intent.putExtra("mensaje", mensaje);
-            intent.putExtra("canal", "Motivacional");
-            intent.putExtra("tipo", "motivacional");
 
-            long trigger = System.currentTimeMillis() + frecuencia * 3600000L;
-            Notifications.programarNotificacion(this, intent, trigger);
+            // Datos al Worker
+            Data data = new Data.Builder()
+                    .putString("titulo", "Motivación diaria")
+                    .putString("mensaje", mensaje)
+                    .putString("canal", "Motivacional")
+                    .build();
+
+            PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(NotificationWorker.class, frecuencia, TimeUnit.HOURS)
+                    .setInputData(data)
+                    .build();
+
+            WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                    "MotivacionPeriodicWorker",
+                    ExistingPeriodicWorkPolicy.REPLACE,
+                    request
+            );
 
             finish();
         });
