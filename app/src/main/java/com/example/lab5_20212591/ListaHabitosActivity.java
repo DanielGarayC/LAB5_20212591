@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.lab5_20212591.adapter.HabitoAdapter;
 import com.example.lab5_20212591.model.Habito;
 import com.example.lab5_20212591.SharedPrefManager;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
 
@@ -41,6 +42,16 @@ public class ListaHabitosActivity extends AppCompatActivity {
         btnAgregar = findViewById(R.id.btnAgregarHabito);
         manager = new SharedPrefManager(this);
         msgVacio = findViewById(R.id.tvVacio);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Botón atrás pal toolbar :D
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        // Comportamiento del botón :D
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         ArrayList<Habito> lista = manager.obtenerHabitos();
 

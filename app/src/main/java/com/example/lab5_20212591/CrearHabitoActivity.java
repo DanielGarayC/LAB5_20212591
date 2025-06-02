@@ -23,6 +23,7 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.lab5_20212591.model.Habito;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +48,16 @@ public class CrearHabitoActivity extends AppCompatActivity {
         etFechaHora = findViewById(R.id.etFechaHora);
         AutoCompleteTextView autoCategoria = findViewById(R.id.autoCategoria);
         btnGuardar = findViewById(R.id.btnGuardarHabito);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Botón atrás pal toolbar :D
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        // Comportamiento del botón :D
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         manager = new SharedPrefManager(this);
         calendar = Calendar.getInstance();

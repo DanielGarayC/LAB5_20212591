@@ -17,6 +17,8 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.android.material.appbar.MaterialToolbar;
+
 import java.util.concurrent.TimeUnit;
 
 public class ConfHabitoActivity extends AppCompatActivity {
@@ -34,6 +36,16 @@ public class ConfHabitoActivity extends AppCompatActivity {
         etFrecuencia = findViewById(R.id.etFrecuencia);
         btnGuardar = findViewById(R.id.btnGuardarConfig);
         manager = new SharedPrefManager(this);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Botón atrás pal toolbar :D
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        // Comportamiento del botón :D
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         etMensaje.setText(manager.obtenerMensaje());
         etFrecuencia.setText(String.valueOf(manager.obtenerFrecuenciaMotivacional()));
