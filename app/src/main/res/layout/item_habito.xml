@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="10dp"
     android:elevation="4dp"
     app:cardCornerRadius="12dp"
     app:cardBackgroundColor="@android:color/white"
@@ -13,7 +13,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="#F2EDED">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvNombre"

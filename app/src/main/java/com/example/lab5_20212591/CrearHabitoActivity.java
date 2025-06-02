@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -26,7 +27,6 @@ import java.util.Locale;
 public class CrearHabitoActivity extends AppCompatActivity {
 
     EditText etNombre, etFrecuencia, etFechaHora;
-    Spinner spinnerCategoria;
     Button btnGuardar;
     Calendar calendar;
     SharedPrefManager manager;
@@ -39,25 +39,39 @@ public class CrearHabitoActivity extends AppCompatActivity {
         etNombre = findViewById(R.id.etNombreHabito);
         etFrecuencia = findViewById(R.id.etFrecuencia);
         etFechaHora = findViewById(R.id.etFechaHora);
-        spinnerCategoria = findViewById(R.id.spinnerCategoria);
+        AutoCompleteTextView autoCategoria = findViewById(R.id.autoCategoria);
         btnGuardar = findViewById(R.id.btnGuardarHabito);
 
         manager = new SharedPrefManager(this);
         calendar = Calendar.getInstance();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                new String[]{"Ejercicio", "Alimentación", "Sueño", "Lectura"});
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategoria.setAdapter(adapter);
+        String[] categorias = {"Ejercicio", "Alimentación", "Sueño", "Lectura"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                categorias
+        );
+        autoCategoria.setAdapter(adapter);
 
         etFechaHora.setOnClickListener(v -> mostrarDateTimePicker());
 
         btnGuardar.setOnClickListener(v -> {
             String nombre = etNombre.getText().toString();
-            String categoria = spinnerCategoria.getSelectedItem().toString();
+            String categoria = autoCategoria.getText().toString();
             int frecuencia = Integer.parseInt(etFrecuencia.getText().toString());
             String fechaHora = etFechaHora.getText().toString();
+
+            //Validaciones
+            if (nombre.isEmpty() || etFrecuencia.getText().toString().isEmpty() || fechaHora.isEmpty()) {
+                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (frecuencia <= 0) {
+                Toast.makeText(this, "La frecuencia debe ser mayor a 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             Habito habito = new Habito(nombre, categoria, frecuencia, fechaHora);
             ArrayList<Habito> lista = manager.obtenerHabitos();

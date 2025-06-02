@@ -30,9 +30,9 @@
             android:layout_height="wrap_content"
             android:text="No te rindas 💪"
             android:textAppearance="?attr/textAppearanceSubtitle1"
-            android:textColor="?android:attr/textColorSecondary"
             android:gravity="center"
             android:layout_marginTop="8dp"
+            android:textColor="#000000"
             app:layout_constraintTop_toBottomOf="@id/tvSaludo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

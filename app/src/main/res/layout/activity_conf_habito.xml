@@ -2,23 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="24dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvTitulo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Configurar Mensaje"
-            android:textAppearance="?attr/textAppearanceHeadline4"
-            android:gravity="center"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:title="Configuración de Mensaje"
+        app:titleTextColor="@android:color/white"
+        app:titleTextAppearance="?attr/textAppearanceHeadline6"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 
@@ -29,7 +27,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:strokeWidth="0dp"
-            app:layout_constraintTop_toBottomOf="@id/tvTitulo"
+            android:layout_margin="30dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -38,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="24dp"
-                android:background="@android:color/white">
+                android:background="#F2EDED">
 
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -71,7 +70,7 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Cada cuántas horas"
+                    android:hint="¿Cada cuántas horas?"
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusBottomStart="12dp"
@@ -97,15 +96,16 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGuardarConfig"
             style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
+            android:layout_width="280dp"
             android:layout_height="56dp"
             android:text="Guardar Configuración"
             android:textAppearance="?attr/textAppearanceButton"
             app:cornerRadius="28dp"
-            android:textColor="@color/save"
-            app:strokeColor="@color/save"
+            android:textColor="#FFFFFF"
+            app:strokeColor="#3DBCAF"
             app:iconGravity="textStart"
             app:iconPadding="8dp"
+            android:backgroundTint="#3DBCAF"
             android:layout_marginTop="32dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"

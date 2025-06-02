@@ -51,6 +51,8 @@ public class ConfHabitoActivity extends AppCompatActivity {
 
             long trigger = System.currentTimeMillis() + frecuencia * 3600000L;
             Notifications.programarNotificacion(this, intent, trigger);
+
+            finish();
         });
     }
 }
