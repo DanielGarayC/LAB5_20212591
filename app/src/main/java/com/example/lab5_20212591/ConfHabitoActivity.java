@@ -81,7 +81,10 @@ public class ConfHabitoActivity extends AppCompatActivity {
                     .putString("canal", "Motivacional")
                     .build();
 
+            long delay = TimeUnit.HOURS.toMillis(frecuencia);
+
             PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(NotificationWorker.class, frecuencia, TimeUnit.HOURS)
+                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                     .setInputData(data)
                     .build();
 

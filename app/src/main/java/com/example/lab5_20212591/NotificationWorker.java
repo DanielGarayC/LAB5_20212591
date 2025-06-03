@@ -19,7 +19,6 @@ public class NotificationWorker extends Worker {
         String mensaje = getInputData().getString("mensaje");
         String canal = getInputData().getString("canal");
 
-        // Mostrar notificación usando tu clase Notifications
         Notifications.mostrarNotificacion(getApplicationContext(), titulo, mensaje, canal);
 
         return Result.success();

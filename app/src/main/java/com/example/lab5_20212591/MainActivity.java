@@ -56,21 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
         manager = new SharedPrefManager(this);
 
-        Data data = new Data.Builder()
-                .putString("titulo", "Motivación diaria")
-                .putString("mensaje", manager.obtenerMensaje())
-                .putString("canal", "Motivacional")
-                .build();
-
-        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, manager.obtenerFrecuenciaMotivacional(), TimeUnit.HOURS)
-                .setInputData(data)
-                .build();
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-                "MotivacionPeriodicWorker",
-                ExistingPeriodicWorkPolicy.REPLACE,  // Usa REPLACE si quieres que se actualice siempre
-                workRequest
-        );
 
         tvSaludo = findViewById(R.id.tvSaludo);
         tvMotivacion = findViewById(R.id.tvMotivacion);
